@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Papier Cailloux Ciseau</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
+    <script src="./packages/intersect/dist/cdn.js" defer></script>
+    <script src="./packages/morph/dist/cdn.js" defer></script>
+    <script src="./packages/history/dist/cdn.js"></script>
+    <script src="./packages/persist/dist/cdn.js"></script>
+    <script src="./packages/trap/dist/cdn.js"></script>
+    <script src="./packages/alpinejs/dist/cdn.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+    <!-- <script src="https://unpkg.com/alpinejs@3.0.0/dist/cdn.min.js" defer></script> -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+</head>
+<body>
+<!-- <div x-data="{ isOpen: true }">
+    <button x-on:click=" isOpen = !isOpen">Toggle</button>
+    <h1 x-show="isOpen">Alpinjs</h1>
+</div> -->
+
+<header class="navigation">
+    <div class="container navigation-content">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a class="navbar-brand" href="index.html"
+            ><img
+                    src="https://godwinekuma.github.io/we-connect/images/logo-white.svg"
+                    alt="weconnect logo"
+                    height="50"
+                    class="navbar-brand-image"
+            />
+                Let's reload game</a
+            >
+            <section class="hero">
+                <div class="container">
+                    <h1 class="display-4" style="text-align:center">
+                        Bienvenue mortels
+                    </h1>
+                    <h2 class="" style="text-align:center">
+                        Rejoignez le pas mortal du tout combat !
+                    </h2>
+                    <button
+                            class="navbar-toggler"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+        </nav>
+    </div>
+    </div>
+    </section>
+</header>
+
+<select class="custom-select" x-model="image_type">
+    <option selected>choisi ton arme</option>
+    <option value="all">Papier</option>
+    <option value="photo">Cailloux</option>
+    <option value="illustration">Ciseaux</option>
+</select>
+<div class="input-group-append">
+    <button
+            class="btn btn-primary"
+            type="button"
+            x-on:click=""
+    >
+        Je te choisis !
+    </button>
+</div>
+
+<div x-data="{ isOpen: false}">
+    <button x-on:click=" isOpen = true">Toggle</button>
+    <h1 x-show="isOpen" @click.away="isOpen = false">Alpinjs</h1>
+</div>
+
+<div x-data="imageViewer()">
+    <div class="mb-2">
+        <!-- Show the image -->
+        <template x-if="imageUrl">
+            <img :src="imageUrl"
+                 class="object-cover rounded border border-gray-200"
+                 style="width: 100px; height: 100px;"
+            >
+        </template>
+
+        <!-- Show the gray box when image is not available -->
+        <template x-if="!imageUrl">
+            <div
+                    class="border rounded border-gray-200 bg-gray-100"
+                    style="width: 100px; height: 100px;"
+            ></div>
+        </template>
+
+        <!-- Image file selector -->
+
+        <input class="mt-2" type="file" accept="image/*" @change="fileChosen">
+
+    </div>
+</div>
+
+<input type="text" x-data x-init = "new Pikaday({field: $el})">
+
+<script>
+    const myIMG = [
+        "https://www.lesinrocks.com/wp-content/uploads/2016/08/dwaynebis.jpg?resize=750%2C500&quality=75",
+   // "https://www.syfy.com/sites/syfy/files/styles/1200x680/public/2020/12/edward-scissorhands.jpg",
+    //"data:image/jpeg;base64,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"
+];
+
+    new Pikaday({field:document.querySelector('input')})
+
+    function imageViewer() {
+        return {
+            imageUrl: '',
+
+            fileChosen(event) {
+                this.fileToDataUrl(event, src => this.imageUrl = src)
+            },
+
+            fileToDataUrl(event, callback) {
+                if (! event.target.files.length) return
+
+                let file = event.target.files[0],
+                    reader = new FileReader()
+
+                reader.readAsDataURL(file)
+                reader.onload = e => callback(e.target.result)
+            },
+        }
+    }
+
+    $("img").each(function (index, element) {
+        $(this).click(function (event) {
+            console.log("L'utilisateur a cliqué sur " + $(this).attr('src'));
+
+            var $newUserChoice = $("<p>")
+                .text($(this).attr('alt'))
+                .appendTo("#userChoice");
+
+            var $newComputerChoice = $("<p>")
+                .text(getComputerChoice())
+                .appendTo("#computerChoice");
+
+            var result = playGame($newUserChoice.text(), $newComputerChoice.text());
+            var $newGameResult = $("<p>")
+                .text(result)
+                .css("color", function () {
+                    if (result == "Won bitchies") {
+                        return "green"
+                    }
+                    ;
+                    if (result == "Lost loser !!!") {
+                        return "red"
+                    }
+                    ;
+                    if (result == "Tied try again") {
+                        return "grey"
+                    }
+                    ;
+                })
+                .css("font-weight", function () {
+                    return "bold";
+                })
+
+                .appendTo("#gameResult");
+        });
+    });
+
+    function playGame(uChoice, computerChoice) {
+        var uChoice = getPlayerChoice(uChoice);
+        return findWinner(uChoice, computerChoice);
+    }
+
+    function getPlayerChoice(playerInput) {
+        lowInput = playerInput.toLowerCase();
+        if (lowInput == 'rock' || lowInput == 'paper' ||
+            lowInput == 'scissors' || lowInput == 'bomb') {
+
+            return lowInput;
+        } else {
+            alert("message d\'erreur");
+        }
+    }
+
+    function getComputerChoice() {
+        var compInput = Math.floor(Math.random() * 3);
+
+        switch (compInput) {
+            case 0:
+                return 'rock';
+                break;
+            case 1:
+                return 'paper';
+                break;
+            case 2:
+                return 'scissors';
+                break;
+        }
+    }
+
+    function findWinner(playerChoice, computerChoice) {
+        if (playerChoice == 'bomb') {
+            return 'Won bitchies';
+        } else if (playerChoice == computerChoice) {
+            return 'Tied try again';
+        } else if (playerChoice == 'rock') {
+            if (computerChoice == 'scissors') {
+                return 'Won bitchies';
+            } else {
+                return 'Lost loser !!!';
+            }
+        } else if (playerChoice == 'paper') {
+            if (computerChoice == 'rock') {
+                return 'Won bitchies';
+            } else {
+                return 'Lost loser !!!';
+            }
+        } else if (playerChoice == 'scissors') {
+            if (computerChoice == 'paper') {
+                return 'Won bitchies';
+            } else {
+                return 'Lost loser !!!';
+            }
+        }
+    };
+</script>
+</body>
+</html>
